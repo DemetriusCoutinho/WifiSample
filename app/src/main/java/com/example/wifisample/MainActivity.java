@@ -5,19 +5,27 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.net.wifi.p2p.WifiP2pConfig;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.wifisample.RecyclerViewAdapter.WifiP2PrecyclerAdapter;
+import com.example.wifisample.RecyclerViewAdapter.WifisRecyclerAdapter;
 import com.example.wifisample.broadcast.WifiP2PBroadCast;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Context mContext;
     private WifiManager mWifiManager;
     private ViewHolder mViewHolder;
@@ -30,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver mBroadcastReceiver;
     private IntentFilter mIntentFilter;
     private WifiP2pManager.PeerListListener mPeerListListener;
+    private WifiP2pConfig mConfig;
+    private WifiP2PrecyclerAdapter mWifiP2PrecyclerAdapter;
+    private List<WifiP2pDevice> mListDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         this.mContext = this;
+        this.mViewHolder = new ViewHolder();
 //        this.mViewHolder = new ViewHolder();
 //        mWifiManager = (WifiManager) this.mContext.getSystemService(Context.WIFI_SERVICE);
 //        this.mViewHolder.mRecyclerView = this.findViewById(R.id.recycler_wifis);
@@ -60,19 +72,50 @@ public class MainActivity extends AppCompatActivity {
 //        if (!sucesso) {
 //            this.scanFalha();
 //        }
+
+        this.mViewHolder.mRecyclerView = findViewById(R.id.recycler_wifis);
+        this.mViewHolder.mBtnAtualizarWifi = findViewById(R.id.btn_atualizar_wifis);
         this.mPeerListListener = new WifiP2pManager.PeerListListener() {
             @Override
             public void onPeersAvailable(WifiP2pDeviceList wifiP2pDeviceList) {
-
+                mConfig = new WifiP2pConfig();
+                mListDevice = new ArrayList<>();
+                mListDevice.addAll(wifiP2pDeviceList.getDeviceList());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setAdapter();
+                    }
+                });
+//                WifiP2pDevice device = mListDevice.get(0);
+//                mConfig.deviceAddress = device.deviceAddress;
+//                mWifiP2pManager.connect(mChannel, mConfig, new WifiP2pManager.ActionListener() {
+//                    @Override
+//                    public void onSuccess() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onFailure(int i) {
+//
+//                    }
+//                });
             }
         };
         this.mIntentFilter = new IntentFilter();
         this.mWifiP2pManager = (WifiP2pManager) this.mContext.getSystemService(Context.WIFI_P2P_SERVICE);
         this.mChannel = this.mWifiP2pManager.initialize(this.mContext, getMainLooper(), null);
+        this.mBroadcastReceiver = new WifiP2PBroadCast(this.mWifiP2pManager, this.mChannel, this, this.mPeerListListener);
+        this.mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        this.mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        this.mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+        this.mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+
         this.mWifiP2pManager.discoverPeers(this.mChannel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
                 Toast.makeText(mContext, "Sucesso ! ", Toast.LENGTH_SHORT).show();
+//                setAdapter();
             }
 
             @Override
@@ -80,12 +123,15 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        this.mBroadcastReceiver = new WifiP2PBroadCast(this.mWifiP2pManager, this.mChannel, this, this.mPeerListListener);
-        this.mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-        this.mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-        this.mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
-        this.mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
+        this.mViewHolder.mBtnAtualizarWifi.setOnClickListener(this);
+        this.mViewHolder.mRecyclerView.setLayoutManager(new LinearLayoutManager(this.mContext));
+    }
+
+    public void setAdapter() {
+        this.mWifiP2PrecyclerAdapter = new WifiP2PrecyclerAdapter(this.mContext, this.mListDevice);
+        this.mViewHolder.mRecyclerView.setAdapter(this.mWifiP2PrecyclerAdapter);
+        this.mWifiP2PrecyclerAdapter.notifyDataSetChanged();
     }
 
     private void scanSucesso() {
@@ -111,8 +157,28 @@ public class MainActivity extends AppCompatActivity {
         this.mListScanResults = this.mWifiManager.getScanResults();
     }
 
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+
+        if (id == R.id.btn_atualizar_wifis) {
+            this.mWifiP2pManager.discoverPeers(this.mChannel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Toast.makeText(mContext, "Sucesso ! ", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(int i) {
+
+                }
+            });
+        }
+    }
+
     public static class ViewHolder {
         private RecyclerView mRecyclerView;
+        private Button mBtnAtualizarWifi;
     }
 
 }

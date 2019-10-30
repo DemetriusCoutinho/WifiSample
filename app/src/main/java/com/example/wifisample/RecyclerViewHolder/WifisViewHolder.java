@@ -1,14 +1,13 @@
-package com.example.wifisample;
+package com.example.wifisample.RecyclerViewHolder;
 
 import android.net.wifi.ScanResult;
-import android.os.Build;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
+import com.example.wifisample.R;
 
 public class WifisViewHolder extends RecyclerView.ViewHolder {
 
@@ -23,7 +22,7 @@ public class WifisViewHolder extends RecyclerView.ViewHolder {
     public void onBindData(ScanResult result) {
 
 
-            this.mViewHolder.mTextNomeRede.setText(result.SSID);
+        this.mViewHolder.mTextNomeRede.setText(result.SSID);
 
 
     }

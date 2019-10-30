@@ -1,14 +1,16 @@
-package com.example.wifisample;
+package com.example.wifisample.RecyclerViewAdapter;
 
 import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.wifisample.R;
+import com.example.wifisample.RecyclerViewHolder.WifisViewHolder;
 
 import java.util.List;
 
@@ -40,6 +42,6 @@ public class WifisRecyclerAdapter extends RecyclerView.Adapter<WifisViewHolder> 
 
     @Override
     public int getItemCount() {
-        return this.mResults.size();
+        return this.mResults.size() - 1;
     }
 }
