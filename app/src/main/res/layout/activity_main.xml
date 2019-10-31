@@ -17,6 +17,7 @@
             android:scrollbars="vertical"
             tools:layout_editor_absoluteX="1dp"
             tools:layout_editor_absoluteY="1dp" />
+
         <Button
             android:id="@+id/btn_atualizar_wifis"
             android:layout_width="match_parent"

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.wifisample.OnConnectionWifiP2P;
 import com.example.wifisample.R;
 import com.example.wifisample.RecyclerViewHolder.WifiP2PViewHolder;
 
@@ -18,10 +19,12 @@ public class WifiP2PrecyclerAdapter extends RecyclerView.Adapter<WifiP2PViewHold
     private Context mContext;
     private List<WifiP2pDevice> mResult;
     private WifiP2PViewHolder mViewHolder;
+    private OnConnectionWifiP2P mOnConnectionWifiP2P;
 
-    public WifiP2PrecyclerAdapter(Context context, List<WifiP2pDevice> result) {
+    public WifiP2PrecyclerAdapter(Context context, List<WifiP2pDevice> result, OnConnectionWifiP2P listener) {
         this.mContext = context;
         this.mResult = result;
+        this.mOnConnectionWifiP2P = listener;
     }
 
     @NonNull
@@ -36,7 +39,7 @@ public class WifiP2PrecyclerAdapter extends RecyclerView.Adapter<WifiP2PViewHold
 
     @Override
     public void onBindViewHolder(@NonNull WifiP2PViewHolder holder, int position) {
-        this.mViewHolder.onBindData(this.mResult.get(position));
+        this.mViewHolder.onBindData(this.mResult.get(position), this.mOnConnectionWifiP2P);
     }
 
     @Override

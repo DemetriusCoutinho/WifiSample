@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ViewHolder mViewHolder;
     private WifisRecyclerAdapter mWifisRecyclerAdapter;
     private List<ScanResult> mListScanResults;
-
+    private OnConnectionWifiP2P mOnConnectionWifiP2P;
     // WifiP2p
     private WifiP2pManager mWifiP2pManager;
     private WifiP2pManager.Channel mChannel;
@@ -49,6 +49,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         this.mContext = this;
         this.mViewHolder = new ViewHolder();
+        this.mOnConnectionWifiP2P = new OnConnectionWifiP2P() {
+            @Override
+            public void connection(WifiP2pDevice device) {
+                Toast.makeText(mContext, device.deviceName, Toast.LENGTH_SHORT).show();
+                WifiP2pConfig config = new WifiP2pConfig();
+                config.deviceAddress = device.deviceAddress;
+                mWifiP2pManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(mContext, "Conexão bem Sucedida ! ", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(int i) {
+
+                    }
+                });
+
+            }
+        };
 //        this.mViewHolder = new ViewHolder();
 //        mWifiManager = (WifiManager) this.mContext.getSystemService(Context.WIFI_SERVICE);
 //        this.mViewHolder.mRecyclerView = this.findViewById(R.id.recycler_wifis);
@@ -129,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void setAdapter() {
-        this.mWifiP2PrecyclerAdapter = new WifiP2PrecyclerAdapter(this.mContext, this.mListDevice);
+        this.mWifiP2PrecyclerAdapter = new WifiP2PrecyclerAdapter(this.mContext, this.mListDevice, this.mOnConnectionWifiP2P);
         this.mViewHolder.mRecyclerView.setAdapter(this.mWifiP2PrecyclerAdapter);
         this.mWifiP2PrecyclerAdapter.notifyDataSetChanged();
     }

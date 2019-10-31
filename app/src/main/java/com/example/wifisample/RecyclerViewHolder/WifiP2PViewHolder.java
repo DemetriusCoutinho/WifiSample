@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.wifisample.OnConnectionWifiP2P;
 import com.example.wifisample.R;
 
 public class WifiP2PViewHolder extends RecyclerView.ViewHolder {
@@ -20,7 +21,7 @@ public class WifiP2PViewHolder extends RecyclerView.ViewHolder {
         this.mViewHolder.mTextNomeWifiP2p = itemView.findViewById(R.id.text_name_wifip2p);
     }
 
-    public void onBindData(final WifiP2pDevice device) {
+    public void onBindData(final WifiP2pDevice device, final OnConnectionWifiP2P listener) {
 
         this.mViewHolder.mTextNomeWifiP2p.setText(device.deviceName);
 
@@ -29,6 +30,8 @@ public class WifiP2PViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View view) {
                 Toast.makeText(itemView.getContext(), device.deviceName, Toast.LENGTH_SHORT).show();
+                listener.connection(device);
+
             }
         });
     }
