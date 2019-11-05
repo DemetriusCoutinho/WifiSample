@@ -23,6 +23,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Buscar" />
+        <Button
+            android:id="@+id/btn_enviar_dados"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enviar Imagem" />
+        <TextView
+            android:id="@+id/text_status_envio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Status"/>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
